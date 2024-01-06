@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HTML5 Canvas</title>
+  <link rel="icon" href="https://fav.farm/🔥" />
+</head>
+<body>
+<canvas class="draw" width="800" height="800"></canvas>
+<div class="view">
+  <button type='button' class='eraser'>Eraser</button>
+</div>
+
+<script>
+
+  const canvas = document.querySelector('.draw');
+  const clr_btn = document.querySelector('.eraser');
+  const ctx = canvas.getContext('2d');  // telling Js that the context of the drawing is going to be one of 2 dimensional.
+ 
+ canvas.width = window.innerWidth;
+ canvas.height = window.innerHeight;
+
+ctx.strokeStyle = "#BADA55";
+ctx.lineJoin = 'round';
+ctx.lineCap = 'round';
+ctx.lineWidth = 100;
+
+ let isDrawing = false;
+ let lastX = 0; // start of line
+ let lastY = 0; // end of line
+ let hue = 0;
+ let direction = true;
+ 
+
+
+ function draw(e){
+  if(!isDrawing) return; // stop function
+  console.log(e)
+  ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+
+  //draw begin
+  ctx.beginPath();
+  ctx.moveTo(lastX,lastY);
+  ctx.lineTo(e.offsetX, e.offsetY); // values are coming for the event
+  // to see the drawing
+  ctx.stroke(); 
+  // lastX = e.offsetX;  set value for next time
+  // lastY = e.offsetY;
+  [lastX, lastY] = [e.offsetX, e.offsetY]
+
+  
+  hue++;
+  if (hue >= 360) {
+    hue = 0;
+  }
+  if (ctx.lineWidth >= 100 || ctx.lineWidth <= 1) {
+    direction = !direction;
+  }
+
+  if(direction) {
+    ctx.lineWidth++;
+  } else {
+    ctx.lineWidth--;
+  }
+
+}
+ 
+
+ canvas.addEventListener('mousedown', (e) => {
+  isDrawing= true;
+  [lastX, lastY] = [e.offsetX, e.offsetY]
+
+});
+
+canvas.addEventListener('mousemove', draw);
+canvas.addEventListener('mouseup', () => isDrawing = false);
+canvas.addEventListener('mouseout', () => isDrawing = false);
+
+// clear option
+clr_btn.addEventListener('click', e => {
+    e.preventDefault();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+})
+
+</script>
+
+<style>
+  html, body {
+    margin: 0;
+  }
+   
+  .view{
+    width: 100%;
+   
+
+    padding-inline: 1rem;
+  
+    position: absolute;
+    top: 1rem;
+    gap: 2rem;
+ 
+  }
+  button{
+    box-shadow:  0px 2px 9px 2px #888888;
+    cursor: pointer;
+    font-size: 1rem;
+    color: rgb(246, 255, 204);
+    padding: 1rem 0.8rem;
+    border-radius: 15px;
+    opacity: .8;
+    background-color: rgb(13, 13, 14);
+    border: none;
+    transition: transform .4s ease;
+  }
+  button:active{
+    transform: scale(0.6);
+}
+</style>
+
+</body>
+</html>
